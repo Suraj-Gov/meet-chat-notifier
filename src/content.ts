@@ -4,12 +4,20 @@ let prevMessageSender: string = "";
 // init messageWindow
 let messageWindow: Node | null = null;
 
-const createNotification = (name: string, message: string) => {
+const createNotification = (
+  name: string,
+  message: string,
+  timestamp: string
+) => {
+  // TODO: do not show notification if name is 'You'
+  if (message === undefined) {
+    return;
+  }
   // chrome.notifications.create(name + message, {
   //   title: name,
   //   message: message,
   // });
-  console.log({ name, message });
+  console.log({ name, message, timestamp });
   prevMessageSender = name;
 };
 
@@ -18,18 +26,20 @@ let observer = new MutationObserver((mutations) => {
     if (mutation.addedNodes.length) {
       // @ts-ignore
       const name = mutation.addedNodes[0].dataset.senderName;
-      if (name) {
+      // @ts-ignore
+      const timestamp = mutation.addedNodes[0].dataset.formattedTimestamp;
+      if (name && timestamp) {
         const message =
           // @ts-ignore
           mutation.addedNodes[0].childNodes[1].childNodes[0].dataset
             .messageText;
-        createNotification(name, message);
+        createNotification(name, message, timestamp);
       } else {
         // @ts-ignore
         if (mutation.addedNodes[0].classList.length === 1) {
           // @ts-ignore
           const message = mutation.addedNodes[0].dataset.messageText;
-          createNotification(prevMessageSender, message);
+          createNotification(prevMessageSender, message, "now");
         }
       }
       if (mutation.addedNodes[0].childNodes[1]) {
