@@ -16,22 +16,14 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
+    "scripts": ["background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://meet.google.com/*"
-      ],
-      "js": [
-        "content.js"
-      ]
+      "matches": ["https://meet.google.com/*"],
+      "js": ["content.js"]
     }
   ],
-  "permissions": [
-    "storage"
-  ]
+  "permissions": ["storage", "notifications"]
 }

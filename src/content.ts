@@ -10,13 +10,18 @@ const createNotification = (
   timestamp: string
 ) => {
   // TODO: do not show notification if name is 'You'
-  if (message === undefined) {
+  if (message === undefined || name === "You") {
     return;
   }
-  // chrome.notifications.create(name + message, {
-  //   title: name,
-  //   message: message,
-  // });
+  const msg: MessageTypes = {
+    data: {
+      name,
+      message,
+      timestamp,
+    },
+    message: "NOTIFY",
+  };
+  chrome.runtime.sendMessage(msg);
   console.log({ name, message, timestamp });
   prevMessageSender = name;
 };
@@ -61,6 +66,13 @@ const getMessageWindow = () => {
   const messageWindow = getElementByXpath(
     "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div/div[2]/div[2]/div[2]/span[2]/div/div[2]"
   );
+  if (messageWindow === null) {
+    alert(
+      "Unable to capture the message window. Please keep the chat tab open and try again."
+    );
+    chrome.storage.local.set({ isListening: false });
+    return;
+  }
   if (messageWindow) observer.observe(messageWindow, { childList: true });
   console.log(messageWindow, "got message window");
 };
@@ -71,19 +83,15 @@ const stopMessageWindow = () => {
 
 chrome.runtime.onMessage.addListener(
   (message: MessageTypes, sender, sendResponse) => {
-    switch (message) {
+    switch (message.message) {
       case "START_LISTEN":
         getMessageWindow();
         break;
       case "STOP_LISTEN":
         stopMessageWindow();
     }
-    return true;
+    return !!messageWindow;
   }
 );
 
 // getting the messageWindow on load
-getMessageWindow();
-if (messageWindow === null) {
-  chrome.storage.local.set({ isListening: false });
-}
