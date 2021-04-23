@@ -33,7 +33,7 @@ const sendNotification = (data: notificationData) => {
     message = message.slice(0, 120);
   }
   chrome.notifications.create(
-    `${name}${message}`,
+    `${name}${message}${Math.random().toFixed(4)}`,
     {
       type: "basic",
       title: `${name} - ${timestamp}`,

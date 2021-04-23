@@ -8,8 +8,7 @@
 
 .App {
   min-width: 300px;
-  min-height: 200px;
-  background-color: #151515;
+  background-color: #131313;
   text-align: center;
 }
 
@@ -44,12 +43,6 @@
   width: 25px;
   height: 25px;
   background-color: white;
-}
-
-.switch-container.on {
-  background-color: #418bf8;
-}
-
-.switch-container.on > .switch-circle {
-  transform: translateX(90%);
+  transform: translateX(0);
+  transition: all 0.2s ease-in-out;
 }
