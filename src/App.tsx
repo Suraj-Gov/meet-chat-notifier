@@ -19,8 +19,8 @@ const App = () => {
 
   React.useEffect(() => {
     // if error revert back to default not listening state
-    chrome.runtime.onMessage.addListener((msg: string) => {
-      if (msg === "ERROR") {
+    chrome.runtime.onMessage.addListener((msg: MessageTypes) => {
+      if (msg.message === "ERROR") {
         setIsListening(false);
       }
     });
