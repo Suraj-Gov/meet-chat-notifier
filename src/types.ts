@@ -26,6 +26,14 @@ export type MessageTypes =
   | {
       message: "ERROR";
       data: false;
+    }
+  | {
+      message: "DISABLE_LISTEN";
+      data: false;
+    }
+  | {
+      message: "ENABLE_LISTEN";
+      data: true;
     };
 
 export type WindowType = { messageWindow: Node };

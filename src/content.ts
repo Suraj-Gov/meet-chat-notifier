@@ -82,7 +82,7 @@ const getMessageWindow = () => {
   }
   // https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver
   // this is the Xpath to capture the messageWindow
-  const messageWindow = getElementByXpath(
+  messageWindow = getElementByXpath(
     "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div/div[2]/div[2]/div[2]/span[2]/div/div[2]"
   );
   // if messageWindow is not found
@@ -96,9 +96,28 @@ const getMessageWindow = () => {
   // else start listening now
   console.log("listening now");
   if (messageWindow) {
+    // @ts-ignore
+    messageWindow.style.transition = "all 1s ease-in-out";
+    // @ts-ignore
+    messageWindow.style.backgroundColor = "rgb(238, 238, 238)";
+    const id = setInterval(() => {
+      if (messageWindow === null) {
+        clearInterval(id);
+        return;
+      }
+      // @ts-ignore
+      if (messageWindow.style.backgroundColor === "rgb(238, 238, 238)") {
+        // @ts-ignore
+        messageWindow.style.backgroundColor = "rgb(255, 255, 255)";
+      } else {
+        // @ts-ignore
+        messageWindow.style.backgroundColor = "rgb(238, 238, 238)";
+      }
+    }, 1000);
     // if the listener is activated after some existing messages
     // these observers are useful
     // observe the main messageDiv
+    console.log(messageWindow, "enabled");
     observer.observe(messageWindow, { childList: true });
     // select the container that holds the messages
     messageWindow.childNodes.forEach((child) => {
@@ -112,6 +131,8 @@ const getMessageWindow = () => {
 
 // if the user stops listening
 const stopMessageWindow = () => {
+  // @ts-ignore
+  messageWindow.style.border = "none";
   messageWindow = null;
   observer.disconnect();
   console.log("stopped listening");

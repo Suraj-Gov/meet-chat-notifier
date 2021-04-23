@@ -15,6 +15,7 @@ const SwitchCircle = styled.div<{ isListening: boolean }>`
 
 const App = () => {
   const [isListening, setIsListening] = React.useState(false);
+  const [switchEnabled, setSwitchEnabled] = React.useState(false);
   let switchDiv: HTMLElement | null = null;
 
   React.useEffect(() => {
@@ -30,6 +31,20 @@ const App = () => {
     });
     // get the switch div
     switchDiv = document.getElementById("x");
+    // get the current tab
+    // https://gist.github.com/javiersantos/c3e9ae2adba72e898f99
+    chrome.tabs.query(
+      { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT },
+      ([tab]) => {
+        // allowing google meet sessions
+        // disallowing the google meet home screen
+        if (tab.url && tab.url.length > 35) {
+          tab.url.slice(0, 24) === "https://meet.google.com/"
+            ? setSwitchEnabled(true)
+            : setSwitchEnabled(false);
+        }
+      }
+    );
   }, []);
 
   const toggleListening = () => {
@@ -43,31 +58,34 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="switch-main-container">
-        <h1>Notifier {isListening ? "enabled" : "disabled"}</h1>
-        <SwitchContainer
-          onClick={toggleListening}
-          style={{ cursor: "pointer" }}
-          className="switch-container"
-          isListening={isListening}
-          id="x"
-        >
-          <SwitchCircle
+      {switchEnabled && (
+        <div className="switch-main-container">
+          <h1>{`Notifier ${isListening ? "enabled" : "disabled"}`}</h1>
+          <SwitchContainer
+            onClick={toggleListening}
+            style={{ cursor: "pointer" }}
+            className="switch-container"
             isListening={isListening}
-            className="switch-circle"
-          ></SwitchCircle>
-        </SwitchContainer>
-      </div>
+            id="x"
+          >
+            <SwitchCircle
+              isListening={isListening}
+              className="switch-circle"
+            ></SwitchCircle>
+          </SwitchContainer>
+        </div>
+      )}
       <div style={{ padding: "1rem", color: "white" }}>
         <h2>
           Notifier needs your chat
           <br />
           box to be open to work.
         </h2>
-        <p style={{ paddingTop: "0.8rem" }}>
+        <p style={{ paddingTop: "0.8rem", lineHeight: "1.4rem" }}>
           100% private chats. No network calls.
           <br />
           <a
+            style={{ color: "blue" }}
             href="https://www.github.com/Suraj-Gov/meet-chat-notifier"
             target="_blank"
           >
