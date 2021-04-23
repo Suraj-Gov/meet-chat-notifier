@@ -31,6 +31,15 @@ const createNotification = (
   prevMessageSender = name;
 };
 
+// if the user stops listening
+const stopMessageWindow = () => {
+  // @ts-ignore
+  messageWindow = null;
+  observer.disconnect();
+  chrome.storage.local.set({ isListening: false });
+  console.log("stopped listening");
+};
+
 // creating observer
 // if a new change is observed, it is pushed to the addedNodes stack
 // from the new mutation, get the name, timestamp
@@ -39,6 +48,9 @@ const createNotification = (
 // ts-ignores are used here because dataset type is not present in the doctypes, but are definitely present on the DOM
 let observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
+    if (mutation.attributeName === "class") {
+      stopMessageWindow();
+    }
     if (mutation.addedNodes.length) {
       // @ts-ignore
       const name = mutation.addedNodes[0].dataset.senderName;
@@ -117,7 +129,8 @@ const getMessageWindow = () => {
     // if the listener is activated after some existing messages
     // these observers are useful
     // observe the main messageDiv
-    console.log(messageWindow, "enabled");
+    // @ts-ignore
+    observer.observe(messageWindow.offsetParent, { attributes: true });
     observer.observe(messageWindow, { childList: true });
     // select the container that holds the messages
     messageWindow.childNodes.forEach((child) => {
@@ -127,15 +140,6 @@ const getMessageWindow = () => {
       });
     });
   }
-};
-
-// if the user stops listening
-const stopMessageWindow = () => {
-  // @ts-ignore
-  messageWindow.style.border = "none";
-  messageWindow = null;
-  observer.disconnect();
-  console.log("stopped listening");
 };
 
 // listen to messages
