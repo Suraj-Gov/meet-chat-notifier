@@ -2,22 +2,22 @@ import { MessageTypes } from "./types";
 
 let isListening = false;
 
-chrome.storage.local.get(["isListening"], (data) => {
-  isListening = !!data.isListening;
-});
+chrome.storage.local.set({ isListening: false });
 
-const sendMessageToContentScript = (message: MessageTypes) => {
-  // sending the message to the content_script
-  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    if (tab.id)
+const sendMessageToContentScript = async (message: MessageTypes) => {
+  await chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const [tab] = tabs;
+    if (tabs.length === 0) {
+      const msg: MessageTypes = {
+        data: false,
+        message: "ERROR",
+      };
+      chrome.runtime.sendMessage(msg);
+    } else if (tab && tab.id) {
       chrome.tabs.sendMessage(tab.id, message, (res) => {
-        if (!res) {
-          chrome.runtime.sendMessage("ERROR");
-          chrome.storage.local.set({ isListening: false });
-        } else {
-          chrome.storage.local.set({ isListening: true });
-        }
+        console.log(res, "received data from cs");
       });
+    }
   });
 };
 
@@ -52,15 +52,19 @@ chrome.runtime.onMessage.addListener(
       case "START_LISTEN":
         isListening = true;
         chrome.storage.local.set({ isListening: true });
-        sendMessageToContentScript({ data: true, message: "START_LISTEN" });
-        console.log("listening now");
+        sendMessageToContentScript({
+          data: true,
+          message: "CONTENT/START_LISTEN",
+        });
         sendResponse(true);
         break;
       case "STOP_LISTEN":
         isListening = false;
         chrome.storage.local.set({ isListening: false });
-        sendMessageToContentScript({ data: false, message: "STOP_LISTEN" });
-        console.log("stopped listening");
+        sendMessageToContentScript({
+          data: false,
+          message: "CONTENT/STOP_LISTEN",
+        });
         sendResponse(false);
         break;
       case "GET_LISTEN":

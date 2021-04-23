@@ -11,6 +11,7 @@ const createNotification = (
 ) => {
   // TODO: do not show notification if name is 'You'
   if (message === undefined || name === "You") {
+    prevMessageSender = "You";
     return;
   }
   const msg: MessageTypes = {
@@ -22,7 +23,6 @@ const createNotification = (
     message: "NOTIFY",
   };
   chrome.runtime.sendMessage(msg);
-  console.log({ name, message, timestamp });
   prevMessageSender = name;
 };
 
@@ -73,24 +73,35 @@ const getMessageWindow = () => {
     chrome.storage.local.set({ isListening: false });
     return;
   }
-  if (messageWindow) observer.observe(messageWindow, { childList: true });
-  console.log(messageWindow, "got message window");
+  console.log("listening now");
+  if (messageWindow) {
+    observer.observe(messageWindow, { childList: true });
+    messageWindow.childNodes.forEach((child) => {
+      child.childNodes.forEach((childChild) => {
+        observer.observe(childChild, { childList: true });
+      });
+    });
+  }
 };
 
 const stopMessageWindow = () => {
   messageWindow = null;
+  observer.disconnect();
+  console.log("stopped listening");
 };
 
 chrome.runtime.onMessage.addListener(
   (message: MessageTypes, sender, sendResponse) => {
     switch (message.message) {
-      case "START_LISTEN":
+      case "CONTENT/START_LISTEN":
         getMessageWindow();
         break;
-      case "STOP_LISTEN":
+      case "CONTENT/STOP_LISTEN":
         stopMessageWindow();
+        break;
     }
-    return !!messageWindow;
+    sendResponse(true);
+    // https://stackoverflow.com/questions/54126343/how-to-fix-unchecked-runtime-lasterror-the-message-port-closed-before-a-respon
   }
 );
 

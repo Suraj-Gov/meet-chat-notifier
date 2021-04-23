@@ -1,10 +1,10 @@
 export type MessageTypes =
   | {
-      message: "START_LISTEN";
+      message: "START_LISTEN" | "CONTENT/START_LISTEN";
       data: true;
     }
   | {
-      message: "STOP_LISTEN";
+      message: "STOP_LISTEN" | "CONTENT/STOP_LISTEN";
       data: false;
     }
   | {
@@ -22,6 +22,10 @@ export type MessageTypes =
         message: string;
         timestamp: string;
       };
+    }
+  | {
+      message: "ERROR";
+      data: false;
     };
 
 export type WindowType = { messageWindow: Node };
