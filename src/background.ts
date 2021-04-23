@@ -4,6 +4,7 @@ let isListening = false;
 
 chrome.storage.local.set({ isListening: false });
 
+// uses tabs query to send the correct tab's cscript
 const sendMessageToContentScript = async (message: MessageTypes) => {
   await chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const [tab] = tabs;
@@ -47,8 +48,9 @@ const sendNotification = (data: notificationData) => {
 };
 
 chrome.runtime.onMessage.addListener(
-  (message: MessageTypes, sender, sendResponse) => {
+  (message: MessageTypes, _, sendResponse) => {
     switch (message.message) {
+      // user input to start listening
       case "START_LISTEN":
         isListening = true;
         chrome.storage.local.set({ isListening: true });
@@ -58,6 +60,7 @@ chrome.runtime.onMessage.addListener(
         });
         sendResponse(true);
         break;
+      // user input to stop listening
       case "STOP_LISTEN":
         isListening = false;
         chrome.storage.local.set({ isListening: false });
@@ -67,9 +70,11 @@ chrome.runtime.onMessage.addListener(
         });
         sendResponse(false);
         break;
+      // get listening status
       case "GET_LISTEN":
         sendResponse(isListening);
         break;
+      // message passing to notify the user
       case "NOTIFY":
         sendNotification(message.data);
     }

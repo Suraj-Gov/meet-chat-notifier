@@ -32,14 +32,6 @@ const App = () => {
     switchDiv = document.getElementById("x");
   }, []);
 
-  React.useEffect(() => {
-    if (isListening) {
-      switchDiv?.classList.add("on");
-    } else {
-      switchDiv?.classList.remove("on");
-    }
-  }, [isListening]);
-
   const toggleListening = () => {
     const msg: MessageTypes = isListening
       ? { data: false, message: "STOP_LISTEN" }
