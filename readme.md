@@ -1,29 +1,15 @@
-# Chrome Extension boilerplate created with React Typescript
+# Meet Chat Notifications
 
-## Getting started
+The Chrome Extension that notifies you when you get a chat message on your Google Meet session.
 
-Create a project based on this boilerplate.
+## Requirements
 
-```
-$ npx degit https://github.com/sivertschou/react-typescript-chrome-extension-boilerplate.git#christmas <project-name>
-```
+1. You need to allow notifications from Chrome, allow storage and notifications permission from this extension.
+2. This extension works only if you have your right tab open (the one with the participants list and chat box)
 
-Navigate to the project directory and install the dependencies.
+### Bugs
 
-```
-$ npm install
-```
+Right now, no bugs or issues are detected.
+If you find a bug/issue, open a PR or shoot a email at sg332k@gmail.com to describe the bug/issue.
 
-To build the extension, and rebuild it when the files are changed, run
-
-```
-$ npm start
-```
-
-After the project has been built, a directory named `dist` has been created. You have to add this directory to your Chrome browser:
-
-1. Open Chrome.
-2. Navigate to `chrome://extensions`.
-3. Enable _Developer mode_.
-4. Click _Load unpacked_.
-5. Select the `dist` directory.
+✌
