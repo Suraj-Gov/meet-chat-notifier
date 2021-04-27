@@ -2,7 +2,7 @@
 
 The Chrome Extension that notifies you when you get a chat message on your Google Meet session.
 
-## Important
+## IMPORTANT -- README!
 
 Disable mute-notifications-during-screen-share for the extension to work when screensharing is enabled. Copy this [chrome://flags/#mute-notifications-during-screen-share] and disable the option highlighted.
 
